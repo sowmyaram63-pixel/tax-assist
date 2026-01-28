@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="{{ url_for('static', filename='page2.css') }}">
+
+<body>
+    
+<!--Nav bar-->
+<nav class="navbar">
+    <div class="nav-left">
+        <span class="logo">ClearTax</span>
+    </div>
+    <ul class="nav-center">
+        <li class="dropdown">
+            Products
+            <ul class="dropdown-menu">
+                    <li>Income Tax</li>
+                    <li>GST</li>
+                    <li>Business Compliance</li>
+                </ul>
+        </li>
+        <li class="dropdown">
+                Resources
+                <ul class="dropdown-menu">
+                    <li>Blog</li>
+                    <li>Guides</li>
+                    <li>Help Center</li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                Company 
+                <ul class="dropdown-menu">
+                    <li>About Us</li>
+                    <li>Careers</li>
+                    <li>Contact</li>
+                </ul>
+            </li>
+    </ul>
+     <div class="nav-right">
+            <button class="btn-primary">Get Started</button>
+        </div>
+    
+</nav>
+<!-- HERO SECTION -->
+<section class="hero">
+    <div class="hero-left">
+        <h1>Assisted Filing - ITR U</h1>
+
+        <p class="hero-subtext">
+            Tax Filing Simplified for updated return. Get your tax filed by ClearTax Experts
+        </p>
+
+        <div class="rating">
+            <span class="rating-score">4.3 ⭐</span>
+            <span class="rating-reviews">View all reviews (19290)</span>
+        </div>
+
+        <div class="hero-links">
+            <a href="#">About this plan</a>
+            <a href="#">Who Should Buy</a>
+            <a href="#">How It’s Done</a>
+            <a href="#">Documents Required</a>
+            <a href="#">Review</a>
+        </div>
+
+        <div class="hero-description">
+            <h3>About this plan</h3>
+            <p>
+                It is a provision introduced under the Income Tax Act in India, allowing taxpayers
+                to correct any mistakes or omissions in their previously filed ITR.
+                The ITR-U helps individuals rectify errors, such as missing income,
+                wrong claims, or incorrect details, ensuring compliance with tax laws.
+            </p>
+        </div>
+    </div>
+    <div class="hero-right">
+        <div class="price-card">
+            <h4>Assisted Filing - ITR U</h4>
+            <h2>8,413</h2>
+            <h5>9,348</h5>
+            <p class="discount">(10% OFF)</p>
+            <a href="/buy-now">
+                <button class="btn-primary btn-full">Buy now</button>
+            </a>
+        </div>
+    </div>
+</section>
+</body>
+</html>
