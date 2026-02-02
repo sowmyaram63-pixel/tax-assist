@@ -1,177 +1,192 @@
-*{
+
+/* ========================
+   GLOBAL RESET & FONT
+======================== */
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
 }
+
 body {
-    background-color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+    color: #1f2937;
+    background: #ffffff;
 }
+
+/* ========================
+   NAVBAR
+======================== */
 .navbar {
-    height: 70px;
-    background-color: #ffffff;
+    height: 72px;
+    padding: 0 80px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 40px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-
+    border-bottom: 1px solid #eef0f4;
 }
 
-/* LEFT */
 .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #1a73e8;
+    font-size: 22px;
+    font-weight: 700;
 }
 
-/* CENTER MENU */
 .nav-center {
-    list-style: none;
     display: flex;
-    gap: 30px;
-}
-
-.nav-center li {
-    position: relative;
-    cursor: pointer;
-    color: #333;
-    font-size: 15px;
-}
-
-/* DROPDOWN */
-.dropdown-menu {
-    position: absolute;
-    top: 35px;
-    left: 0;
-    background-color: #ffffff;
+    gap: 32px;
     list-style: none;
-    padding: 10px 0;
-    min-width: 180px;
-    border-radius: 6px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    display: none;
+    color: #374151;
+    font-weight: 500;
 }
 
-.dropdown-menu li {
-    padding: 10px 20px;
-    font-size: 14px;
-}
-
-.dropdown-menu li:hover {
-    background-color: #f2f6ff;
-}
-
-/* SHOW DROPDOWN */
-.dropdown:hover .dropdown-menu {
-    display: block;
-}
-
-/* RIGHT BUTTON */
 .btn-primary {
-    background-color: #1a73e8;
-    color: #ffffff;
+    background: #2563eb;
+    color: #fff;
     border: none;
-    padding: 10px 20px;
-    font-size: 14px;
-    border-radius: 6px;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-weight: 600;
     cursor: pointer;
 }
 
-.btn-primary:hover {
-    background-color: #1558b0;
-}
-.hero{
-    display: flex;
-    justify-content: space-between;
-    padding: 60px 80px;
-    gap: 60px;
+.btn-primary.outline {
+    background: #fff;
+    color: #2563eb;
+    border: 1px solid #c7d2fe;
 }
 
-/* LEFT */
-.hero-left {
-    flex: 2;
+/* ========================
+   HERO LAYOUT
+======================== */
+.hero {
+    max-width: 1200px;
+    margin: 80px auto;
+    display: grid;
+    grid-template-columns: 1.3fr 0.9fr;
+    gap: 80px;
 }
-.hero-left h1{ 
-    font-size: 36px;
-    color: #1a2b49;
-    margin-bottom: 15px;
+
+/* ========================
+   LEFT CONTENT
+======================== */
+.hero-left h1 {
+    font-size: 44px;
+    font-weight: 700;
+    margin-bottom: 14px;
 }
-.hero-subtext{
+
+.hero-subtext {
     font-size: 16px;
-    color: #666;
-    margin-bottom: 20px;   
+    color: #6b7280;
+    margin-bottom: 24px;
+    max-width: 520px;
 }
-.rating{
+
+.rating {
     display: flex;
-    gap: 15px;
     align-items: center;
-    margin-bottom: 25px;
+    gap: 12px;
+    margin-bottom: 24px;
 }
+
 .rating-score {
-    font-weight: bold;
+    font-weight: 600;
 }
+
 .rating-reviews {
-    color: #1a73e8;
+    color: #2563eb;
+    font-weight: 500;
     cursor: pointer;
-    font-size: 14px;
+}
+
+/* ========================
+   TABS (CRITICAL)
+======================== */
+.hero-links {
+    display: flex;
+    gap: 28px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 28px;
 }
 
 .hero-links a {
-    color: #1a73e8;
-    font-size: 14px;
-    text-decoration: none;
+    padding-bottom: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
 }
 
-.hero-links a:hover {
-    text-decoration: underline;
+.hero-links a.active {
+    color: #2563eb;
+    border-bottom: 3px solid #2563eb;
 }
 
-/* DESCRIPTION */
+/* ========================
+   DESCRIPTION
+======================== */
 .hero-description h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
+    font-size: 22px;
+    margin-bottom: 12px;
 }
 
 .hero-description p {
-    color: #444;
-    line-height: 1.6;
+    font-size: 15px;
+    color: #374151;
+    line-height: 1.7;
+    max-width: 600px;
 }
 
-/* RIGHT */
-.hero-right {
-    flex: 1;
-}
-
+/* ========================
+   PRICE CARD (IMPORTANT)
+======================== */
 .price-card {
-    background-color: #f9fbff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    background: #fbfbfd;
+    padding: 32px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
 }
 
 .price-card h4 {
-    margin-bottom: 15px;
     font-size: 16px;
+    color: #374151;
+    margin-bottom: 20px;
 }
 
-.price-card h2 {
+.price {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.currency {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.current {
     font-size: 36px;
-    color: #1a73e8;
+    font-weight: 700;
 }
-.price-card h5{
-    text-decoration: line-through;
-    color: #666;
-}
-.discount {
-    color: #ff4d4f;
+
+.old-price {
     font-size: 14px;
-    margin-bottom: 20px;
+    color: #9ca3af;
+    margin-bottom: 22px;
+}
+
+.old-price span:first-child {
+    text-decoration: line-through;
+    margin-right: 8px;
+}
+
+.discount {
+    color: #ef4444;
+    font-weight: 600;
 }
 
 .btn-full {
     width: 100%;
+    font-size: 16px;
+    padding: 14px;
 }
