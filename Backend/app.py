@@ -1,19 +1,22 @@
 
 from flask import Flask, render_template, request, redirect, session, url_for,jsonify
 from authlib.integrations.flask_client import OAuth
-import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import os
 import json
 from werkzeug.security import generate_password_hash, check_password_hash
-
+import psycopg2
 load_dotenv()
-
+ 
+def get_db():
+    return psycopg2.connect(os.getenv("DATABASE_URL"))
+ 
 app = Flask(__name__,
     template_folder="../frontend/templates",
     static_folder="../frontend/static")
 
-app.secret_key = "supersecret123"
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 oauth = OAuth(app)
 
@@ -160,10 +163,6 @@ def disable_cache(response):
     return response
 
 
-
-def get_db():
-    return sqlite3.connect("users.db")
-
 @app.route("/")
 def home():
     return render_template("home.html")
@@ -179,15 +178,16 @@ def signup():
         db = get_db()
         cur = db.cursor()
         cur.execute(
-            "INSERT INTO users (email, password) VALUES (?, ?)",
+            "INSERT INTO users (email, password) VALUES (%s, %s)",
             (email, hashed_password)
         )
         db.commit()
+        cur.close()
+        db.close()
 
         session["user"] = {
             "email": email,
-            "name": email.split("@")[0],
-            "picture": url_for("static", filename="icons/user.png")
+            "name": email.split("@")[0]
         }
 
         next_page = session.pop("next", None)
@@ -195,7 +195,7 @@ def signup():
 
     return render_template("auth.html", mode="signup")
 
-@app.route("/login", methods=["GET","POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form["email"]
@@ -203,23 +203,27 @@ def login():
 
         db = get_db()
         cur = db.cursor()
-        cur.execute("SELECT * FROM users WHERE email=?", (email,))
+        cur.execute(
+            "SELECT id, password FROM users WHERE email=%s",
+            (email,)
+        )
         user = cur.fetchone()
+        cur.close()
+        db.close()
 
-        if user and check_password_hash(user[2], password):
+        if user and check_password_hash(user[1], password):
             session["user"] = {
-                "email": user[1],
-                "name": user[1].split("@")[0],
-                "picture": url_for("static", filename="icons/user.png")
+                "id": user[0],
+                "email": email,
+                "name": email.split("@")[0]
             }
 
             next_page = session.pop("next", None)
-            return redirect(next_page or "/dashboard")
+            return redirect(next_page or url_for("home"))
 
         return "Invalid email or password", 401
 
     return render_template("auth.html", mode="login")
-
 
 
 @app.route("/forgot-password", methods=["GET", "POST"])
@@ -247,7 +251,7 @@ def dashboard():
     if "user" not in session:
         return redirect("/login")
 
-    return render_template("dashboard.html")
+    return render_template("home.html")
 
 @app.route("/logout")
 def logout():
@@ -268,7 +272,7 @@ def chatbot():
 
 @app.route("/buy-now")
 def buy_now():
-    session["next"] = request.referrer or "/"
+    session["next"] = request.referrer or "/payment"
 
     if "user" in session:
         return redirect(url_for("payment"))
