@@ -34,10 +34,13 @@ body {
 
 .container {
     display: flex;
-    max-width: 1200px;
-    margin: 30px auto;
+    width: 100%;
+    max-width: none;
+    margin: 30px 0;
+    padding: 0 40px;
     gap: 30px;
 }
+
 
 .left {
     flex: 2;
@@ -206,4 +209,14 @@ body {
 
 .success-card a:hover {
     background: #1d4ed8;
+}
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .right {
+        order: -1;
+    }
 }

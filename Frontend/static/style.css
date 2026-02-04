@@ -89,7 +89,7 @@ font-weight:600;
 .card {
   background: #fff;
   border-radius: 22px;
-  padding: 28px;
+  padding: 80px 28px 28px;
   width: 260px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.06);
   transition: 
@@ -100,6 +100,9 @@ font-weight:600;
   cursor: pointer;
   position: relative;
   overflow: visible; 
+  display: flex;
+  flex-direction: column;
+  height: 320px;
 }
 .card:hover {
   border-color: #4f6df5;
@@ -108,7 +111,7 @@ font-weight:600;
 }
 
 .card button {
-  margin-top: 18px;
+  margin-top: auto;
   background: #2563eb;
   color: white;
   border: none;
@@ -118,6 +121,8 @@ font-weight:600;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  align-self: flex-start; 
+  
 }
 .card-badge.purple {
   background: #5b5ef7;
@@ -213,7 +218,9 @@ margin-bottom:40px;
 
 .card{
   position:relative;
-  padding-top:80px; 
+  padding-top:80px;
+  display: flex;
+  flex-direction: column;
 }
 
 .icon{
@@ -393,4 +400,7 @@ margin-bottom:40px;
   33% { content: "."; }
   66% { content: ".."; }
   100% { content: "..."; }
+}
+.card-content {
+  flex: 1;
 }
