@@ -1,22 +1,29 @@
 
+import os
+import sys
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, PROJECT_ROOT)
+
 from flask import Flask, render_template, request, redirect, session, url_for,jsonify
 from authlib.integrations.flask_client import OAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
-import os
 import json
-from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
+
 load_dotenv()
- 
+
 def get_db():
-    return psycopg2.connect(os.getenv("DATABASE_URL"))
- 
+    conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+    return conn, conn.cursor()
+
 app = Flask(__name__,
     template_folder="../frontend/templates",
     static_folder="../frontend/static")
 
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 oauth = OAuth(app)
 
@@ -170,20 +177,35 @@ def home():
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        if not email or not password:
+            return "Email and password required", 400
 
         hashed_password = generate_password_hash(password)
 
-        db = get_db()
-        cur = db.cursor()
-        cur.execute(
-            "INSERT INTO users (email, password) VALUES (%s, %s)",
-            (email, hashed_password)
-        )
-        db.commit()
-        cur.close()
-        db.close()
+        conn, cursor = get_db()
+
+        try:
+            cursor.execute(
+                "INSERT INTO users (email, password) VALUES (%s, %s)",
+                (email, hashed_password)
+            )
+            conn.commit()
+        except psycopg2.errors.UniqueViolation:
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            return "Email already registered", 409
+        except Exception as e:
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            raise e
+
+        cursor.close()
+        conn.close()
 
         session["user"] = {
             "email": email,
@@ -194,6 +216,7 @@ def signup():
         return redirect(next_page or "/dashboard")
 
     return render_template("auth.html", mode="signup")
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -311,6 +334,64 @@ def payment_success():
         "payment_success.html",
         order=session["last_order"]
     )
+
+@app.route("/request-callback", methods=["POST"])
+def request_callback():
+    phone = request.form.get("phone")
+    email = request.form.get("email")
+
+    if not phone and not email:
+        return redirect(request.referrer)
+
+    conn, cursor = get_db()
+
+    cursor.execute("""
+        INSERT INTO callback_requests (phone, email)
+        VALUES (%s, %s)
+    """, (phone, email))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    print("📞 NEW CALLBACK REQUEST:", phone, email)
+    return redirect(request.referrer)
+
+
+
+@app.route("/admin/callbacks")
+def admin_callbacks():
+    conn, cursor = get_db()
+
+    cursor.execute("""
+        SELECT id, phone, email, created_at, status
+        FROM callback_requests
+        ORDER BY created_at DESC
+    """)
+    callbacks = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("admin_callbacks.html", callbacks=callbacks)
+
+@app.route("/admin/callbacks/update/<int:id>", methods=["POST"])
+def update_callback_status(id):
+    status = request.form.get("status")
+
+    conn, cursor = get_db()
+
+    cursor.execute("""
+        UPDATE callback_requests
+        SET status = %s
+        WHERE id = %s
+    """, (status, id))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect("/admin/callbacks")
 
 
 

@@ -1,8 +1,11 @@
 import psycopg2
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # DB
-DATABASE_URL = 'postgresql://neondb_owner:npg_GE0Xigd1AkLS@ep-square-union-ahlvp8o1-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 
 if not DATABASE_URL:
     raise Exception("DATABASE_URL not set")

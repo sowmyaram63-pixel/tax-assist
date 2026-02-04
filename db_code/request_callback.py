@@ -54,3 +54,17 @@ def admin_callbacks():
     callbacks = cursor.fetchall()
     return render_template("admin_callbacks.html", callbacks=callbacks)
 
+@app.route("/admin/callbacks/update/<int:id>", methods=["POST"])
+def update_callback_status(id):
+    status = request.form.get("status")
+
+    cursor.execute("""
+        UPDATE callback_requests
+        SET status = %s
+        WHERE id = %s
+    """, (status, id))
+    db.commit()
+
+    flash("Status updated", "success")
+    return redirect("/admin/callbacks")
+print("✅ request_callback routes loaded")

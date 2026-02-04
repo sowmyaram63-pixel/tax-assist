@@ -10,7 +10,7 @@
 <body>
     <nav class="navbar">
     <div class="nav-left">
-        <span class="logo">ClearTax</span>
+        <span class="logo">TaxAssist</span>
     </div>
     <ul class="nav-center">
         <li class="dropdown">
@@ -84,18 +84,18 @@
     </div>
 
     <div class="hero-right">
-        <form class="callback-card">
+        <form class="callback-card" method="POST" action="/request-callback">
             <div class="form-row">
-    <div class="form-group">
-        <label>Phone Number</label>
-        <input type="text" placeholder="Your contact number">
-    </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone" placeholder="Your contact number">
+                </div>
 
-    <div class="form-group">
-        <label>Email ID</label>
-        <input type="email" placeholder="Your email ID">
-    </div>
-</div>
+                <div class="form-group">
+                    <label>Email ID</label>
+                    <input type="email" name="email"  placeholder="Your email ID">
+                </div>
+            </div>
 
 
             <button type="submit" class="btn-primary full-width">

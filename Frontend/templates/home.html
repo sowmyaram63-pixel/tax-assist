@@ -15,6 +15,9 @@
     <a href="#">Products</a>
     <a href="#">Resources</a>
     <a href="#">Company</a>
+    <a href="/admin/callbacks" style="font-size: 13px; opacity: 0.7;">
+      Admin
+    </a>
     <a href="/login" class="get-started">Get Started</a>
   </div>
 </nav>
@@ -33,43 +36,46 @@
     <div class="cards">
 
      <div class="card yellow">
-      <div class="card-badge purple">
-        Revised Filing by Experts
-      </div>
-      <div class="icon">
-        <img src="{{ url_for('static', filename='icons/document.png') }}">
-      </div>
-      <h3>Belated ITR filing</h3>
-      <p>ITR-U</p>
-      <a href="/belated-itr" class="btn-link">
-        <button>Hire Now</button>
-      </a>
-      
-    </div>
+       <div class="card-content">
+         <div class="card-badge purple">Revised Filing by Experts</div>
+         <div class="icon">
+            <img src="{{ url_for('static', filename='icons/document.png') }}">
+         </div>
+         <h3>Belated ITR filing</h3>
+         <p>ITR-U</p>
+       </div>
 
-    <div class="card peach">
-      <div class="card-badge blue">
-        Max Tax Savings Guaranteed
-      </div>
-      <div class="icon">
-        <img src="{{ url_for('static', filename='icons/register.png') }}">
-      </div>
-      <h3>Tax Planning Services</h3>
-      <a href="/tax-planning">
-        <button>Book Now</button>
-      </a>
-      
-    </div>
-    <div class="card orange">
-      <div class="card-badge green">
-        Easy & Fast Registration
-      </div>
-      <div class="icon">
-        <img src="{{ url_for('static', filename='icons/bussiness.png') }}">
-      </div>
-        <h3>Register Your Bussiness </h3>
-        <button>Register</button>   
-    </div>
+       <a href="/belated-itr" class="btn-link">
+          <button>Hire Now</button>
+       </a>
+     </div>
+     <div class="card peach">
+       <div class="card-content">
+         <div class="card-badge blue">Max Tax Savings Guaranteed</div>
+         <div class="icon">
+           <img src="{{ url_for('static', filename='icons/register.png') }}">
+         </div>
+         <h3>Tax Planning Services</h3>
+         <p>&nbsp;</p> 
+       </div>
+
+       <a href="/tax-planning" class="btn-link">
+          <button>Book Now</button>
+       </a>
+     </div>
+     <div class="card orange">
+       <div class="card-content">
+         <div class="card-badge green">Easy & Fast Registration</div>
+         <div class="icon">
+            <img src="{{ url_for('static', filename='icons/bussiness.png') }}">
+         </div>
+         <h3>Register Your Business</h3>
+         <p>&nbsp;</p>
+       </div>
+
+        <button>Register</button>
+     </div>
+
   </div>
 </section>
 
