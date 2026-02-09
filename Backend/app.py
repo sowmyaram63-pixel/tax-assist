@@ -217,22 +217,22 @@ def signup():
 
     return render_template("auth.html", mode="signup")
 
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
+        email = request.form.get("email")
+        password = request.form.get("password")
 
-        db = get_db()
-        cur = db.cursor()
-        cur.execute(
+        conn, cursor = get_db()
+
+        cursor.execute(
             "SELECT id, password FROM users WHERE email=%s",
             (email,)
         )
-        user = cur.fetchone()
-        cur.close()
-        db.close()
+        user = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
 
         if user and check_password_hash(user[1], password):
             session["user"] = {
@@ -247,6 +247,7 @@ def login():
         return "Invalid email or password", 401
 
     return render_template("auth.html", mode="login")
+
 
 
 @app.route("/forgot-password", methods=["GET", "POST"])
@@ -393,6 +394,12 @@ def update_callback_status(id):
 
     return redirect("/admin/callbacks")
 
+@app.context_processor
+def inject_whatsapp():
+    return {
+        "WHATSAPP_NUMBER": os.getenv("WHATSAPP_NUMBER"),
+        "WHATSAPP_TEXT": os.getenv("WHATSAPP_TEXT")
+    }
 
 
 if __name__ == "__main__":
