@@ -1,59 +1,108 @@
-from flask import request, session, redirect, render_template
-from app import app, db, cursor
+
+from flask import Blueprint, session, redirect, render_template, request
+from functools import wraps
 from db import get_db_connection
 
+admin_bp = Blueprint("admin", __name__)
+
+def admin_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if session.get("role") != "admin":
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return wrapper
 
 
+@admin_bp.route("/callbacks")
+@admin_required
+def admin_callbacks():
+    conn = get_db_connection()
+    cur = conn.cursor()
 
-ADMIN_EMAIL = "admin@taxassist.com"
-ADMIN_PASSWORD = "admin123"
+    cur.execute("""
+        SELECT id, phone, email, created_at, status
+        FROM callback_requests
+        ORDER BY created_at DESC
+    """)
+    callbacks = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template("admin_callbacks.html", callbacks=callbacks)
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+@admin_bp.route("/admin/callbacks/update/<int:id>", methods=["POST"])
+@admin_required
+def update_callback_status(id):
+    status = request.form.get("status")
 
-        # ✅ ADMIN LOGIN 
-        if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
-            session['role'] = 'admin'
-            session['email'] = email
-            return redirect('/admin/dashboard')
+    conn = get_db_connection()
+    cur = conn.cursor()
 
-        # ✅ USER LOGIN (psycopg2)
-        conn = get_db_connection()
-        cur = conn.cursor()
+    cur.execute("""
+        UPDATE callback_requests
+        SET status = %s
+        WHERE id = %s
+    """, (status, id))
 
-        cur.execute(
-            "SELECT id, password FROM users WHERE email = %s",
-            (email,)
-        )
-        user = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
 
-        cur.close()
-        conn.close()
+    return redirect("/admin/callbacks")
 
-        if user and user[1] == password:
-            session['role'] = 'user'
-            session['user_id'] = user[0]
-            return redirect('/index')
 
-        return "Invalid login credentials"
+@admin_bp.route("/logout")
+def admin_logout():
+    session.clear()
+    return redirect("/")
 
-    return render_template('login.html')
+@admin_bp.route("/registrations")
+@admin_required
+def admin_registrations():
+    conn = get_db_connection()
+    cur = conn.cursor()
 
-#admin dashboard 
-@app.route('/admin/dashboard')
-def admin_dashboard():
-    if session.get('role') != 'admin':
-        return redirect('/login')
-    return render_template('admin/dashboard.html')
+    cur.execute("""
+        SELECT id, name, email, created_at
+        FROM users
+        ORDER BY created_at DESC
+    """)
 
-#prevent admin access to user pages
-@app.route('/index')
-def index():
-    if session.get('role') == 'admin':
-        return redirect('/admin/dashboard')
-    return render_template('index.html')
+    users = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return render_template("admin_registrations.html", users=users)
+
+@admin_bp.route("/business")
+@admin_required
+def admin_business():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT 
+            id,
+            business_name,
+            business_type,
+            services,
+            owner_name,
+            email,
+            phone,
+            city,
+            status
+        FROM business_registrations
+        ORDER BY id DESC
+    """)
+
+    businesses = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return render_template("admin_business.html", businesses=businesses)
+
+
 

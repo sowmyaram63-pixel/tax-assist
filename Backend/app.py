@@ -9,10 +9,9 @@ from flask import Flask, render_template, request, redirect, session, url_for,js
 from authlib.integrations.flask_client import OAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
+load_dotenv()
 import json
 import psycopg2
-
-load_dotenv()
 
 def get_db():
     conn = psycopg2.connect(os.getenv("DATABASE_URL"))
@@ -22,7 +21,19 @@ app = Flask(__name__,
     template_folder="../frontend/templates",
     static_folder="../frontend/static")
 
+from admin import admin_bp
+
+app.register_blueprint(admin_bp, url_prefix="/admin")
+
+
+
+from Backend.otp import otp_bp
+app.register_blueprint(otp_bp)
+
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
+if not app.secret_key:
+    raise RuntimeError("SECRET_KEY not set in environment")
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 oauth = OAuth(app)
@@ -46,88 +57,225 @@ with open(KNOWLEDGE_PATH) as f:
 def get_bot_reply(message):
     msg = message.lower()
 
-    # ABOUT COMPANY
-    if any(k in msg for k in ["company", "about", "who are you"]):
-        return {
-            "reply": knowledge["company"]["about"],
-            "suggestions": ["Services", "ITR", "GST", "Contact"]
-        }
-
-    # SERVICES OVERVIEW
-    if any(k in msg for k in ["services", "offer", "what do you do", "help"]):
+    # ==============================
+    # 💰 ITR COST
+    # ==============================
+    if "itr" in msg and any(k in msg for k in ["cost", "price", "fees"]):
         return {
             "reply": (
-                "Here are the services we offer:\n"
-                "• Income Tax Return (ITR) Filing\n"
-                "• GST Registration & Filing\n"
-                "• Tax Planning Assistance"
+                "💰 ITR Filing Cost: ₹1000\n\n"
+                "Final price may vary depending on income type and complexity."
             ),
-            "suggestions": ["ITR", "GST", "Pricing"]
+            "suggestions": ["Documents Required for ITR", "ITR Filing Process", "Talk to Expert"]
         }
 
-    # ITR
+    # ==============================
+    # 💰 GST COST
+    # ==============================
+    if "gst" in msg and any(k in msg for k in ["cost", "price", "fees"]):
+        return {
+            "reply": (
+                "💰 GST Service Cost: ₹2000\n\n"
+                "Final price may vary based on business type and turnover."
+            ),
+            "suggestions": ["Documents Required for GST", "GST Registration Process", "Talk to Expert"]
+        }
+
+    # ==============================
+    # 📄 ITR DOCUMENTS
+    # ==============================
+    if (
+        "itr" in msg
+        and any(k in msg for k in ["document", "documents", "doc", "proof", "required"])
+    ) or (
+        "income tax" in msg
+        and any(k in msg for k in ["document", "documents", "doc", "proof"])
+    ):
+        return {
+            "reply": (
+                "📄 Documents Required for ITR:\n"
+                "• PAN Card\n"
+                "• Aadhaar Card\n"
+                "• Form 16 (for salaried)\n"
+                "• Bank Statements\n"
+                "• Investment Proofs (80C, 80D etc.)\n"
+                "• Capital Gains details (if applicable)"
+            ),
+            "suggestions": ["ITR Cost", "ITR Filing Process", "Talk to Expert"]
+        }
+
+    # ==============================
+    # 📄 GST DOCUMENTS
+    # ==============================
+    if (
+        "gst" in msg
+        and any(k in msg for k in ["document", "documents", "doc", "proof", "required"])
+    ):
+        return {
+            "reply": (
+                "📄 Documents Required for GST Registration:\n"
+                "• PAN Card of Business/Owner\n"
+                "• Aadhaar Card\n"
+                "• Business Address Proof\n"
+                "• Bank Account Details\n"
+                "• Business Registration Certificate (if applicable)"
+            ),
+            "suggestions": ["GST Cost", "GST Registration Process", "Talk to Expert"]
+        }
+        # ==============================
+    # 📄 ITR FILING PROCESS
+    # ==============================
+    if "itr filing process" in msg or "itr process" in msg:
+        return {
+            "reply": (
+                "📝 ITR Filing Process:\n"
+                "1️⃣ Share your documents\n"
+                "2️⃣ Expert review & tax calculation\n"
+                "3️⃣ Return preparation\n"
+                "4️⃣ Filing confirmation\n"
+                "5️⃣ Acknowledgement shared via email"
+            ),
+            "suggestions": ["ITR Cost", "Documents Required for ITR", "Talk to Expert"]
+        }
+
+    # ==============================
+    # 🧾 GST FILING PROCESS
+    # ==============================
+    if "gst filing process" in msg or "gst process" in msg:
+        return {
+            "reply": (
+                "📊 GST Filing Process:\n"
+                "1️⃣ Share sales & purchase data\n"
+                "2️⃣ GST liability calculation\n"
+                "3️⃣ Return preparation (GSTR-1 / GSTR-3B)\n"
+                "4️⃣ Filing on GST portal\n"
+                "5️⃣ Filing confirmation shared"
+            ),
+            "suggestions": ["GST Cost", "Documents Required for GST", "Talk to Expert"]
+        }
+
+    # ==============================
+    # 🧾 ITR GENERAL INFO
+    # ==============================
     if any(k in msg for k in ["itr", "income tax", "file tax"]):
         return {
-            "reply": knowledge["services"]["itr"],
-            "suggestions": ["ITR Cost", "Documents Required", "Filing Process"]
+            "reply": (
+                "We provide end-to-end Income Tax Return filing with expert review and fast processing."
+            ),
+            "suggestions": ["ITR Cost", "Documents Required for ITR", "Filing Process"]
         }
 
-    # GST
+    # ==============================
+    # 🏢 GST GENERAL INFO
+    # ==============================
     if "gst" in msg:
         return {
-            "reply": knowledge["services"]["gst"],
-            "suggestions": ["GST Cost", "GST Registration", "GST Returns"]
+            "reply": (
+                "We assist with GST Registration, GST Filing, and compliance support for businesses."
+            ),
+            "suggestions": ["GST Cost", "Documents Required for GST", "GST Registration Process"]
         }
 
-    # PROCESS
-    if any(k in msg for k in ["process", "how it works", "steps"]):
-        return {
-            "reply": knowledge["process"]["tax_filing"],
-            "suggestions": ["ITR", "GST", "Pricing"]
-        }
-
-    # PRICING
-    if any(k in msg for k in ["cost", "price", "pricing", "fees"]):
+    # ==============================
+    # 🕒 WORKING HOURS
+    # ==============================
+    if any(k in msg for k in ["working hours", "timing", "open", "support hours"]):
         return {
             "reply": (
-                "Our pricing:\n"
-                "• ITR Filing – from ₹999\n"
-                "• GST Filing – from ₹1,499\n"
-                "Final cost depends on your case."
+                "🕒 Our Working Hours:\n"
+                "We are available from 9:00 AM to 9:00 PM (Monday to Saturday).\n\n"
+                "For urgent queries, you can request a callback."
             ),
-            "suggestions": ["ITR", "GST", "Contact"]
+            "suggestions": ["Contact", "Talk to Expert"]
         }
-
-    # PRIVACY
-    if any(k in msg for k in ["privacy", "data", "safe"]):
+        # ==============================
+    # 👨‍💼 TALK TO EXPERT
+    # ==============================
+    if any(k in msg for k in ["talk to expert", "expert", "human", "agent"]):
         return {
-            "reply": knowledge["policies"]["privacy"],
-            "suggestions": ["Security", "Contact"]
+            "reply": (
+                "👨‍💼 Our Tax Expert is available to assist you.\n\n"
+                "📞 Call us directly: +91 916300998547\n\n"
+                "💬 Or click the WhatsApp button on the website to start instant chat.\n\n"
+                "We are available from 9 AM to 9 PM."
+            ),
+            "suggestions": ["Call Now", "WhatsApp Chat", "Working Hours"]
         }
 
-    # SECURITY
-    if any(k in msg for k in ["secure", "security", "encrypted"]):
+    # ==============================
+    # 📞 CONTACT
+    # ==============================
+    if any(k in msg for k in ["contact", "phone", "email", "support"]):
         return {
-            "reply": knowledge["policies"]["security"],
-            "suggestions": ["Privacy Policy", "Contact"]
+            "reply": (
+                "📞 Contact Details:\n\n"
+                "Phone: +91 916300998547\n"
+                "Working Hours: 9 AM - 9 PM\n\n"
+                "For instant response, use our WhatsApp chat button."
+            ),
+            "suggestions": ["Talk to Expert", "Working Hours"]
         }
 
-    # CONTACT
-    if any(k in msg for k in ["contact", "email", "phone", "support"]):
-        c = knowledge["contact"]
+    # ==============================
+    # 💰 GENERAL PRICING
+    # ==============================
+    if any(k in msg for k in ["pricing", "price", "cost", "fees"]):
         return {
-            "reply": f"You can reach us at {c['email']} or {c['phone']} ({c['hours']}).",
-            "suggestions": ["Working Hours", "Talk to Expert"]
+            "reply": (
+                "💰 Our Pricing Overview:\n"
+                "• ITR Filing – ₹1000\n"
+                "• GST Services – ₹2000\n\n"
+                "Final cost depends on your specific case."
+            ),
+            "suggestions": ["ITR", "GST", "Talk to Expert"]
+        }
+    # ==============================
+    # 💬 WHATSAPP CHAT
+    # ==============================
+    if "whatsapp" in msg:
+        return {
+            "reply": (
+                "💬 Click the WhatsApp button on the bottom right corner "
+                "to start instant chat with our tax expert.\n\n"
+                "Or use this direct link:\n"
+                "https://wa.me/91916300998547"
+            ),
+            "suggestions": ["Talk to Expert", "Contact"]
+        }
+    # ==============================
+    # 📞 CALL NOW
+    # ==============================
+    if "call" in msg:
+        return {
+            "reply": (
+                "📞 You can call our Tax Expert directly at:\n\n"
+                "+91 916300998547\n\n"
+                "Available from 9 AM to 9 PM."
+            ),
+            "suggestions": ["WhatsApp Chat", "Working Hours"]
+        }
+    
+    # ==============================
+    # 🕒 WORKING HOURS
+    # ==============================
+    if "working hours" in msg or "hours" in msg:
+        return {
+            "reply": "🕒 Our working hours are 9 AM to 9 PM (All days).",
+            "suggestions": ["Talk to Expert", "Contact"]
         }
 
-    # FALLBACK (SMART, NOT DUMB)
+    # ==============================
+    # 🤖 FALLBACK
+    # ==============================
     return {
         "reply": (
-            "I can help you with:\n"
-            "• ITR filing\n"
-            "• GST services\n"
-            "• Pricing\n"
-            "• Contact details"
+            "Hi 👋 I can help you with:\n\n"
+            "• ITR Filing\n"
+            "• GST Services\n"
+            "• Pricing Details\n"
+            "• Working Hours\n"
+            "• Contact Support\n\n"
+            "Please choose an option below."
         ),
         "suggestions": ["ITR", "GST", "Pricing", "Contact"]
     }
@@ -168,11 +316,10 @@ def disable_cache(response):
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
     return response
-
-
 @app.route("/")
 def home():
     return render_template("home.html")
+
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
@@ -216,39 +363,46 @@ def signup():
         return redirect(next_page or "/dashboard")
 
     return render_template("auth.html", mode="signup")
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
 
-        conn, cursor = get_db()
+        # 🔐 ADMIN LOGIN (ONLY THIS EMAIL + PASSWORD)
+        if email == "admin@taxassist.com" and password == "admin123":
+            session.clear()
+            session["role"] = "admin"
+            session["admin_logged_in"] = True
+            session["email"] = email
+            return redirect("/admin/callbacks")
 
+        # 👤 CUSTOMER LOGIN
+        conn, cursor = get_db()
         cursor.execute(
             "SELECT id, password FROM users WHERE email=%s",
             (email,)
         )
         user = cursor.fetchone()
-
         cursor.close()
         conn.close()
 
         if user and check_password_hash(user[1], password):
+            session.clear()
+            session["role"] = "user"
             session["user"] = {
                 "id": user[0],
                 "email": email,
                 "name": email.split("@")[0]
             }
+            return redirect("/dashboard")
 
-            next_page = session.pop("next", None)
-            return redirect(next_page or url_for("home"))
-
-        return "Invalid email or password", 401
+        return "Invalid login credentials", 401
 
     return render_template("auth.html", mode="login")
 
 
+    return render_template("auth.html", mode="login")
 
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
@@ -269,13 +423,12 @@ def reset_password(token):
 
     return render_template("reset_password.html")
 
-
 @app.route("/dashboard")
 def dashboard():
-    if "user" not in session:
+    if not session.get("user") and not session.get("admin_logged_in"):
         return redirect("/login")
-
     return render_template("home.html")
+
 
 @app.route("/logout")
 def logout():
@@ -359,40 +512,67 @@ def request_callback():
     return redirect(request.referrer)
 
 
+from psycopg2.errors import UniqueViolation
 
-@app.route("/admin/callbacks")
-def admin_callbacks():
-    conn, cursor = get_db()
+@app.route("/register-business", methods=["GET", "POST"])
+def register_business():
+    if request.method == "POST":
+        conn, cursor = get_db()
 
-    cursor.execute("""
-        SELECT id, phone, email, created_at, status
-        FROM callback_requests
-        ORDER BY created_at DESC
-    """)
-    callbacks = cursor.fetchall()
+        try:
+            cursor.execute("""
+                INSERT INTO business_registrations
+                (business_name, business_type, services, owner_name, email, phone, city)
+                VALUES (%s,%s,%s,%s,%s,%s,%s)
+            """, (
+                request.form["business_name"],
+                request.form["business_type"],
+                ", ".join(request.form.getlist("services")),
+                request.form["owner_name"],
+                request.form["email"],
+                request.form["phone"],
+                request.form["city"]
+            ))
+            conn.commit()
 
-    cursor.close()
-    conn.close()
+        except UniqueViolation:
+            conn.rollback()
+            return "❌ Business already registered", 409
 
-    return render_template("admin_callbacks.html", callbacks=callbacks)
+        finally:
+            cursor.close()
+            conn.close()
 
-@app.route("/admin/callbacks/update/<int:id>", methods=["POST"])
-def update_callback_status(id):
-    status = request.form.get("status")
+        return redirect("/business-success")
 
-    conn, cursor = get_db()
+    return render_template("register_business.html")
 
-    cursor.execute("""
-        UPDATE callback_requests
+@app.route("/admin/update-status", methods=["POST"])
+def update_business_status():
+    if not session.get("admin_logged_in"):
+        return redirect("/login")
+
+    business_id = request.form["id"]
+    status = request.form["status"]
+
+    conn, cur = get_db()
+
+    cur.execute("""
+        UPDATE business_registrations
         SET status = %s
         WHERE id = %s
-    """, (status, id))
+    """, (status, business_id))
 
     conn.commit()
-    cursor.close()
+    cur.close()
     conn.close()
 
-    return redirect("/admin/callbacks")
+    return redirect("/admin/business")
+
+@app.route("/business-success")
+def business_success():
+    return render_template("business_success.html")
+
 
 @app.context_processor
 def inject_whatsapp():
@@ -400,6 +580,10 @@ def inject_whatsapp():
         "WHATSAPP_NUMBER": os.getenv("WHATSAPP_NUMBER"),
         "WHATSAPP_TEXT": os.getenv("WHATSAPP_TEXT")
     }
+
+@app.route("/budget-2026")
+def budget_2026():
+    return render_template("budget_2026.html")
 
 
 if __name__ == "__main__":

@@ -1,17 +1,23 @@
-from app import app
-from flask import session, redirect, render_template, request
+
+from flask import Blueprint, session, redirect, render_template, request
 import requests
 import random
 import os
 import time
+import hashlib
 
+otp_bp = Blueprint("otp", __name__)
+
+OTP_EXPIRY = 300  # 5 minutes
 
 def send_sms_otp(phone, otp):
-    url = "https://www.fast2sms.com/dev/bulkV2"
+    url = "https://www.fast2sms.com/dev/bulk"
 
     payload = {
-        "route": "otp",
-        "variables_values": otp,
+        "sender_id": "TXTIND",
+        "message": f"Your TaxAssist Admin OTP is {otp}. Valid for 5 minutes.",
+        "language": "english",
+        "route": "q",
         "numbers": phone
     }
 
@@ -20,57 +26,62 @@ def send_sms_otp(phone, otp):
         "Content-Type": "application/json"
     }
 
-    response = requests.post(url, json=payload, headers=headers)
-    return response.json()
+    response = requests.post(url, data=payload, headers=headers)
+    print("FAST2SMS RESPONSE:", response.text)
 
-@app.route('/send-otp')
+
+
+@otp_bp.route("/send-otp")
 def send_otp():
-    if not session.get('admin_temp'):
-        return redirect('/admin-login')
+    # ✅ MUST check admin_temp (NOT is_admin)
+    if not session.get("admin_temp"):
+        return redirect("/login")
 
     otp = random.randint(100000, 999999)
+    otp_hash = hashlib.sha256(str(otp).encode()).hexdigest()
 
-    session['admin_otp'] = otp
-    session['otp_time'] = time.time()  # for expiry
+    session["admin_otp"] = otp_hash
+    session["otp_time"] = time.time()
 
-    phone = "9703232849"  # admin phone number
+    phone = os.getenv("ADMIN_PHONE")
+
+    # 🔥 DEBUG (MANDATORY)
+    print("🔥 SEND OTP ROUTE HIT")
+    print("📱 ADMIN PHONE:", phone)
+    print("🔐 OTP:", otp)
 
     send_sms_otp(phone, otp)
 
-    # DEV ONLY (remove in production)
-    print("ADMIN OTP:", otp)
+    return redirect("/verify-otp")
 
-    return redirect('/verify-otp')
-@app.route('/verify-otp', methods=['GET', 'POST'])
+
+@otp_bp.route("/verify-otp", methods=["GET", "POST"])
 def verify_otp():
-    if request.method == 'POST':
-        user_otp = request.form['otp']
+    if not session.get("admin_temp"):
+        return redirect("/login")
 
-        if 'admin_otp' not in session:
-            return redirect('/admin-login')
+    if request.method == "POST":
+        if "otp_time" not in session or "admin_otp" not in session:
+            return redirect("/login")
 
-        # OTP expiry (5 minutes)
-        if time.time() - session['otp_time'] > 300:
-            session.pop('admin_otp', None)
+        user_otp = request.form["otp"]
+        hashed_input = hashlib.sha256(user_otp.encode()).hexdigest()
+
+        if time.time() - session["otp_time"] > OTP_EXPIRY:
+            session.clear()
             return "OTP Expired"
 
-        if int(user_otp) == session['admin_otp']:
-            session.pop('admin_otp')
-            session.pop('otp_time')
-            session.pop('admin_temp')
-
-            session['admin_logged_in'] = True
-            return redirect('/admin-dashboard')
+        if hashed_input == session.get("admin_otp"):
+            session.pop("admin_otp", None)
+            session.pop("otp_time", None)
+            session["admin_logged_in"] = True
+            session["is_admin"] = True
+            session["user"] = {
+                "email": "admin@taxassist.com",
+                "name": "Admin"
+           }
+            return redirect("/admin/callbacks")
 
         return "Invalid OTP"
 
-    return render_template('verify_otp.html')
-
-@app.route('/admin-dashboard')
-def admin_dashboard():
-    if not session.get('admin_logged_in'):
-        return redirect('/admin-login')
-
-    return render_template('admin_dashboard.html')
-
-
+    return render_template("verify_otp.html")

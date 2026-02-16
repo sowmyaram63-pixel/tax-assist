@@ -12,12 +12,13 @@
   <div class="logo">TaxAssist</div>
 
   <div class="nav-links">
-    <a href="#">Products</a>
-    <a href="#">Resources</a>
-    <a href="#">Company</a>
-    <a href="/admin/callbacks" style="font-size: 13px; opacity: 0.7;">
-      Admin
-    </a>
+    {% if session.get("role") == "admin" %}
+      <a href="/admin/callbacks">Admin</a>
+      <a href="/admin/business" style="margin-left:15px;">Registrations</a>
+    {% endif %}
+
+
+
     <a href="/login" class="get-started">Get Started</a>
   </div>
 </nav>
@@ -72,8 +73,9 @@
          <h3>Register Your Business</h3>
          <p>&nbsp;</p>
        </div>
-
-        <button>Register</button>
+        <a href="/register-business" class="btn-link">
+          <button>Register</button>
+        </a>
      </div>
      <div class="card cyan">
        <div class="card-content">
@@ -84,8 +86,10 @@
          <h3>Budget 2026 Updates</h3>
          <p>&nbsp;</p>
        </div>
-    
-        <button>Watch Now</button>  
+       <a href="/budget-2026" class="union-budget-widget">
+          <button>Watch Now</button>
+       </a>
+          
      </div>
 
   </div>
