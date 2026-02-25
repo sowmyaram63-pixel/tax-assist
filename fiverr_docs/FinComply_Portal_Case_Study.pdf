@@ -1,0 +1,120 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 2206 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+50 760 Td
+(FinComply Portal \(Anonymized\) - Case Study) Tj
+T*
+(Role: Solo Full-Stack Developer) Tj
+T*
+(Tech Stack: Python, Flask, HTML, CSS, JavaScript, PostgreSQL) Tj
+T*
+() Tj
+T*
+(Project Overview) Tj
+T*
+(FinComply Portal is an anonymized tax and compliance web platform built to support service) Tj
+T*
+(discovery, user onboarding, consultation requests, and admin operations in one system.) Tj
+T*
+() Tj
+T*
+(Business Need) Tj
+T*
+(The goal was to create a clean, fast, and trustworthy platform where users can explore tax) Tj
+T*
+(services, submit callback requests, and where admins can manage requests from a single) Tj
+T*
+(dashboard.) Tj
+T*
+() Tj
+T*
+(My Responsibilities) Tj
+T*
+(- Designed and developed the full system independently \(frontend + backend\).) Tj
+T*
+(- Implemented routing, templates, form workflows, and database integration.) Tj
+T*
+(- Built authentication/session logic for admin and user access control.) Tj
+T*
+(- Developed admin dashboard modules for callbacks and business registrations.) Tj
+T*
+(- Improved UX for form submission, button responsiveness, and navigation.) Tj
+T*
+() Tj
+T*
+(Key Features Delivered) Tj
+T*
+(- Role-based login and session handling.) Tj
+T*
+(- Callback request form with status feedback and duplicate handling.) Tj
+T*
+(- Business registration form with admin-side listing and delete actions.) Tj
+T*
+(- Dynamic home page actions based on login role.) Tj
+T*
+(- Chatbot assistant with service guidance and WhatsApp fallback.) Tj
+T*
+(- Public document checklist page for user self-help.) Tj
+T*
+() Tj
+T*
+(Security and Reliability) Tj
+T*
+(- CSRF protection on sensitive forms.) Tj
+T*
+(- Input validation and safe redirect handling.) Tj
+T*
+(- Session expiry and logout controls.) Tj
+T*
+(- Database error handling with user-friendly fallback messages.) Tj
+T*
+() Tj
+T*
+(Outcome) Tj
+T*
+(- Reduced manual tracking through centralized admin views.) Tj
+T*
+(- Improved user journey from landing page to consultation request.) Tj
+T*
+(- Delivered a scalable base for future service modules and automation.) Tj
+T*
+() Tj
+T*
+(Portfolio Note) Tj
+T*
+(This case study is anonymized. Client/company names and sensitive data are removed or) Tj
+T*
+(masked.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000247 00000 n 
+0000002504 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2574
+%%EOF

@@ -1,0 +1,118 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 2137 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+50 760 Td
+(FlowTrack Workspace \(Anonymized\) - Case Study) Tj
+T*
+(Role: Solo Full-Stack Developer) Tj
+T*
+(Tech Stack: Python, Flask, REST APIs, SQL, HTML, CSS, JavaScript) Tj
+T*
+() Tj
+T*
+(Project Overview) Tj
+T*
+(FlowTrack Workspace is an anonymized project management web app inspired by modern workflow) Tj
+T*
+(tools, created to support task tracking, role-based visibility, and team productivity) Tj
+T*
+(workflows.) Tj
+T*
+() Tj
+T*
+(Business Need) Tj
+T*
+(The requirement was to build a web application where work items can be organized, tracked,) Tj
+T*
+(and managed through structured dashboards and controlled access.) Tj
+T*
+() Tj
+T*
+(My Responsibilities) Tj
+T*
+(- Built the project end-to-end as an individual contributor.) Tj
+T*
+(- Developed backend APIs and database models for task/project workflows.) Tj
+T*
+(- Implemented authentication, authorization, and user session management.) Tj
+T*
+(- Created responsive UI pages for dashboards and workflow actions.) Tj
+T*
+(- Refined codebase structure and removed duplicate/backup clutter.) Tj
+T*
+() Tj
+T*
+(Key Features Delivered) Tj
+T*
+(- Secure user authentication and role-based access.) Tj
+T*
+(- Task and workflow management modules.) Tj
+T*
+(- Dashboard views for quick project status visibility.) Tj
+T*
+(- CRUD operations for core entities.) Tj
+T*
+(- REST-style endpoints for scalable feature integration.) Tj
+T*
+(- Clean and maintainable project structure for future enhancements.) Tj
+T*
+() Tj
+T*
+(Engineering Focus) Tj
+T*
+(- Modular backend design for readability and maintainability.) Tj
+T*
+(- Validation and error-handling for stable user actions.) Tj
+T*
+(- Reusable frontend components and responsive layout behavior.) Tj
+T*
+() Tj
+T*
+(Outcome) Tj
+T*
+(- Delivered a practical internal productivity solution.) Tj
+T*
+(- Established a strong foundation for feature growth \(notifications, reports, integrations\).) Tj
+T*
+(- Demonstrated full-stack ownership from architecture to implementation.) Tj
+T*
+() Tj
+T*
+(Portfolio Note) Tj
+T*
+(This case study is anonymized. No confidential company data, credentials, or private) Tj
+T*
+(identifiers are included.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000247 00000 n 
+0000002435 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2505
+%%EOF
