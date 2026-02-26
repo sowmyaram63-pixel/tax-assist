@@ -51,217 +51,98 @@ google = oauth.register(
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 KNOWLEDGE_PATH = os.path.join(BASE_DIR, "company_knowledge.json")
 
-with open(KNOWLEDGE_PATH) as f:
-    knowledge = json.load(f)
+
+with open(KNOWLEDGE_PATH, "r") as f:
+    KNOWLEDGE = json.load(f)
 
 def get_bot_reply(message):
-    msg = message.lower()
+    msg = message.lower().strip()
+
+    company = KNOWLEDGE["company_name"]
+    phone = KNOWLEDGE["contact"]["phone"]
+    email = KNOWLEDGE["contact"]["email"]
+    hours = KNOWLEDGE["contact"]["working_hours"]
 
     # ==============================
-    # 💰 ITR COST
+    # 👋 GREETING
     # ==============================
-    if "itr" in msg and any(k in msg for k in ["cost", "price", "fees"]):
+    if msg in ["hi", "hello", "hey", "start"]:
         return {
             "reply": (
-                "💰 ITR Filing Cost: ₹1000\n\n"
-                "Final price may vary depending on income type and complexity."
+                f"Hi 👋 Welcome to {company}.\n\n"
+                "I can help you with basic information about our services and plans.\n\n"
+                "For pricing or personalised advice, our expert will assist you on WhatsApp."
             ),
-            "suggestions": ["Documents Required for ITR", "ITR Filing Process", "Talk to Expert"]
-        }
-
-    # ==============================
-    # 💰 GST COST
-    # ==============================
-    if "gst" in msg and any(k in msg for k in ["cost", "price", "fees"]):
-        return {
-            "reply": (
-                "💰 GST Service Cost: ₹2000\n\n"
-                "Final price may vary based on business type and turnover."
-            ),
-            "suggestions": ["Documents Required for GST", "GST Registration Process", "Talk to Expert"]
+            "suggestions": ["Services", "Plans", "Talk to Expert"]
         }
 
     # ==============================
-    # 📄 ITR DOCUMENTS
+    # 🏢 ABOUT
     # ==============================
-    if (
-        "itr" in msg
-        and any(k in msg for k in ["document", "documents", "doc", "proof", "required"])
-    ) or (
-        "income tax" in msg
-        and any(k in msg for k in ["document", "documents", "doc", "proof"])
-    ):
+    if any(k in msg for k in ["about", "company", "who are you"]):
         return {
             "reply": (
-                "📄 Documents Required for ITR:\n"
-                "• PAN Card\n"
-                "• Aadhaar Card\n"
-                "• Form 16 (for salaried)\n"
-                "• Bank Statements\n"
-                "• Investment Proofs (80C, 80D etc.)\n"
-                "• Capital Gains details (if applicable)"
+                f"🏢 {company}\n\n"
+                f"{KNOWLEDGE['about']}"
             ),
-            "suggestions": ["ITR Cost", "ITR Filing Process", "Talk to Expert"]
+            "suggestions": ["Services", "Plans", "Talk to Expert"]
         }
 
     # ==============================
-    # 📄 GST DOCUMENTS
+    # 📌 SERVICES
     # ==============================
-    if (
-        "gst" in msg
-        and any(k in msg for k in ["document", "documents", "doc", "proof", "required"])
-    ):
+    if "services" in msg:
+        services = "\n".join(f"• {s}" for s in KNOWLEDGE["services"])
         return {
-            "reply": (
-                "📄 Documents Required for GST Registration:\n"
-                "• PAN Card of Business/Owner\n"
-                "• Aadhaar Card\n"
-                "• Business Address Proof\n"
-                "• Bank Account Details\n"
-                "• Business Registration Certificate (if applicable)"
-            ),
-            "suggestions": ["GST Cost", "GST Registration Process", "Talk to Expert"]
-        }
-        # ==============================
-    # 📄 ITR FILING PROCESS
-    # ==============================
-    if "itr filing process" in msg or "itr process" in msg:
-        return {
-            "reply": (
-                "📝 ITR Filing Process:\n"
-                "1️⃣ Share your documents\n"
-                "2️⃣ Expert review & tax calculation\n"
-                "3️⃣ Return preparation\n"
-                "4️⃣ Filing confirmation\n"
-                "5️⃣ Acknowledgement shared via email"
-            ),
-            "suggestions": ["ITR Cost", "Documents Required for ITR", "Talk to Expert"]
+            "reply": f"📌 Services Offered:\n{services}",
+            "suggestions": ["Plans", "Talk to Expert"]
         }
 
     # ==============================
-    # 🧾 GST FILING PROCESS
+    # 💼 PLANS
     # ==============================
-    if "gst filing process" in msg or "gst process" in msg:
+    if "plan" in msg:
         return {
             "reply": (
-                "📊 GST Filing Process:\n"
-                "1️⃣ Share sales & purchase data\n"
-                "2️⃣ GST liability calculation\n"
-                "3️⃣ Return preparation (GSTR-1 / GSTR-3B)\n"
-                "4️⃣ Filing on GST portal\n"
-                "5️⃣ Filing confirmation shared"
+                "💼 Our Service Plans:\n\n"
+                "🟢 Basic Plan (Individuals)\n"
+                "• ITR Filing\n"
+                "• Basic Consultation\n\n"
+                "🔵 Professional Plan\n"
+                "• GST + ITR\n"
+                "• TDS Filing\n"
+                "• Compliance Reminders\n\n"
+                "🔴 Business Plan\n"
+                "• Accounting + GST + ROC\n"
+                "• Dedicated Support"
             ),
-            "suggestions": ["GST Cost", "Documents Required for GST", "Talk to Expert"]
-        }
-
-    # ==============================
-    # 🧾 ITR GENERAL INFO
-    # ==============================
-    if any(k in msg for k in ["itr", "income tax", "file tax"]):
-        return {
-            "reply": (
-                "We provide end-to-end Income Tax Return filing with expert review and fast processing."
-            ),
-            "suggestions": ["ITR Cost", "Documents Required for ITR", "Filing Process"]
-        }
-
-    # ==============================
-    # 🏢 GST GENERAL INFO
-    # ==============================
-    if "gst" in msg:
-        return {
-            "reply": (
-                "We assist with GST Registration, GST Filing, and compliance support for businesses."
-            ),
-            "suggestions": ["GST Cost", "Documents Required for GST", "GST Registration Process"]
-        }
-
-    # ==============================
-    # 🕒 WORKING HOURS
-    # ==============================
-    if any(k in msg for k in ["working hours", "timing", "open", "support hours"]):
-        return {
-            "reply": (
-                "🕒 Our Working Hours:\n"
-                "We are available from 9:00 AM to 9:00 PM (Monday to Saturday).\n\n"
-                "For urgent queries, you can request a callback."
-            ),
-            "suggestions": ["Contact", "Talk to Expert"]
-        }
-        # ==============================
-    # 👨‍💼 TALK TO EXPERT
-    # ==============================
-    if any(k in msg for k in ["talk to expert", "expert", "human", "agent"]):
-        return {
-            "reply": (
-                "👨‍💼 Our Tax Expert is available to assist you.\n\n"
-                "📞 Call us directly: +91 916300998547\n\n"
-                "💬 Or click the WhatsApp button on the website to start instant chat.\n\n"
-                "We are available from 9 AM to 9 PM."
-            ),
-            "suggestions": ["Call Now", "WhatsApp Chat", "Working Hours"]
+            "suggestions": ["Talk to Expert"]
         }
 
     # ==============================
     # 📞 CONTACT
     # ==============================
-    if any(k in msg for k in ["contact", "phone", "email", "support"]):
+    if any(k in msg for k in ["contact", "phone", "email"]):
         return {
             "reply": (
-                "📞 Contact Details:\n\n"
-                "Phone: +91 916300998547\n"
-                "Working Hours: 9 AM - 9 PM\n\n"
-                "For instant response, use our WhatsApp chat button."
+                f"📞 Contact {company}\n\n"
+                f"Phone: {phone}\n"
+                f"Email: {email}\n"
+                f"Working Hours: {hours}"
             ),
-            "suggestions": ["Talk to Expert", "Working Hours"]
+            "suggestions": ["Talk to Expert"]
         }
 
     # ==============================
-    # 💰 GENERAL PRICING
+    # 👨‍💼 TALK TO EXPERT
     # ==============================
-    if any(k in msg for k in ["pricing", "price", "cost", "fees"]):
+    if "expert" in msg or "talk" in msg:
         return {
             "reply": (
-                "💰 Our Pricing Overview:\n"
-                "• ITR Filing – ₹1000\n"
-                "• GST Services – ₹2000\n\n"
-                "Final cost depends on your specific case."
+                "👨‍💼 Our tax expert will guide you personally.\n\n"
+                "Click the WhatsApp button below to start chatting."
             ),
-            "suggestions": ["ITR", "GST", "Talk to Expert"]
-        }
-    # ==============================
-    # 💬 WHATSAPP CHAT
-    # ==============================
-    if "whatsapp" in msg:
-        return {
-            "reply": (
-                "💬 Click the WhatsApp button on the bottom right corner "
-                "to start instant chat with our tax expert.\n\n"
-                "Or use this direct link:\n"
-                "https://wa.me/91916300998547"
-            ),
-            "suggestions": ["Talk to Expert", "Contact"]
-        }
-    # ==============================
-    # 📞 CALL NOW
-    # ==============================
-    if "call" in msg:
-        return {
-            "reply": (
-                "📞 You can call our Tax Expert directly at:\n\n"
-                "+91 916300998547\n\n"
-                "Available from 9 AM to 9 PM."
-            ),
-            "suggestions": ["WhatsApp Chat", "Working Hours"]
-        }
-    
-    # ==============================
-    # 🕒 WORKING HOURS
-    # ==============================
-    if "working hours" in msg or "hours" in msg:
-        return {
-            "reply": "🕒 Our working hours are 9 AM to 9 PM (All days).",
-            "suggestions": ["Talk to Expert", "Contact"]
+            "suggestions": ["Open WhatsApp"]
         }
 
     # ==============================
@@ -269,15 +150,11 @@ def get_bot_reply(message):
     # ==============================
     return {
         "reply": (
-            "Hi 👋 I can help you with:\n\n"
-            "• ITR Filing\n"
-            "• GST Services\n"
-            "• Pricing Details\n"
-            "• Working Hours\n"
-            "• Contact Support\n\n"
-            "Please choose an option below."
+            f"Hi 👋 Welcome to {company}.\n\n"
+            "Please use the buttons below to explore our services or speak with an expert."
+
         ),
-        "suggestions": ["ITR", "GST", "Pricing", "Contact"]
+        "suggestions": ["Services", "Plans", "Talk to Expert"]
     }
 
 
