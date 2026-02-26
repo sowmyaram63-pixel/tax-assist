@@ -1,33 +1,61 @@
 
 {
-  "company": {
-    "name": "TaxEase",
-    "about": "TaxEase is an online tax filing platform that helps individuals and small businesses file their taxes easily and securely."
+  "company_name": "SV Accountax Crew",
+  "about": "SV Accountax Crew is a professional tax and compliance firm providing reliable accounting, GST, income tax, and business registration services. We help individuals, startups, and growing businesses stay compliant and stress-free.",
+
+  "services": [
+    "Income Tax Return (ITR) Filing",
+    "GST Registration",
+    "GST Returns Filing",
+    "TDS Returns (24Q, 26Q, 27Q)",
+    "MSME Registration",
+    "IEC Registration",
+    "Partnership Firm Registration",
+    "LLP Registration",
+    "Private Limited Company Incorporation",
+    "ROC Compliances",
+    "Accounting & Bookkeeping",
+    "Audit & Assurance Support",
+    "Business Advisory Services",
+    "Project Reports for Loans"
+  ],
+
+  "plans": {
+    "basic": {
+      "name": "Basic Plan",
+      "target": "Individuals",
+      "includes": [
+        "ITR Filing",
+        "Basic Consultation"
+      ]
+    },
+    "professional": {
+      "name": "Professional Plan",
+      "includes": [
+        "GST + ITR Filing",
+        "TDS Filing",
+        "Compliance Reminders"
+      ]
+    },
+    "business": {
+      "name": "Business Plan",
+      "includes": [
+        "Accounting + GST + ROC",
+        "Dedicated Support",
+        "Monthly Compliance Handling"
+      ]
+    }
   },
 
-  "services": {
-    "itr": "We provide end-to-end Income Tax Return filing with expert review.",
-    "gst": "We help businesses with GST registration and return filing."
-  },
-
-  "process": {
-    "tax_filing": "Users upload documents, we pre-fill data, experts review, and users submit returns."
-  },
-
-  "policies": {
-    "privacy": "We do not share customer data with third parties.",
-    "security": "All user data is encrypted and stored securely."
-  },
+  "policies": [
+    "Client data kept strictly confidential",
+    "No data shared with third parties"
+  ],
 
   "contact": {
-    "email": "support@taxease.in",
-    "phone": "+91 90000 00000",
-    "hours": "Mon–Fri, 9 AM to 6 PM"
-  },
-
-  "pricing": {
-  "itr": "ITR filing starts from ₹999 depending on complexity.",
-  "gst": "GST filing starts from ₹1,499 per return."
+    "email": "svatcrew@outlook.com",
+    "phone": "+91 9676359019",
+    "working_hours": "Monday to Saturday, 10:00 AM – 7:00 PM"
   }
-
 }
+
