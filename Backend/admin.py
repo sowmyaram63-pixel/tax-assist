@@ -292,7 +292,7 @@ def admin_registrations():
     finally:
         release_db_connection(conn)
 
-    return render_template("business_registrations.html", users=users)
+    return render_template("admin_registrations.html", users=users)
 
 @admin_bp.route("/businesses")
 @admin_required
@@ -305,7 +305,7 @@ def admin_business():
         conn = get_db_connection()
     except psycopg2.OperationalError:
         return render_template(
-            "admin_businesses.html",
+            "admin_business.html",
             businesses=[],
             db_error=True,
             q=q,
@@ -342,7 +342,7 @@ def admin_business():
         cur.close()
     except psycopg2.OperationalError:
         return render_template(
-            "admin_businesses.html",
+            "admin_business.html",
             businesses=[],
             db_error=True,
             q=q,
@@ -356,7 +356,7 @@ def admin_business():
         release_db_connection(conn)
 
     return render_template(
-        "admin_businesses.html",
+        "admin_business.html",
         businesses=businesses,
         q=q,
         status_filter=status_filter,

@@ -85,6 +85,7 @@
 
     <div class="hero-right">
         <form class="callback-card" method="POST" action="/request-callback">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="form-row">
                 <div class="form-group">
                     <label>Phone Number</label>

@@ -66,6 +66,8 @@
 <table>
     <tr>
         <th>ID</th>
+        <th>Name</th>
+        <th>Service</th>
         <th>Phone</th>
         <th>Email</th>
         <th>Requested At</th>
@@ -78,14 +80,17 @@
         <td>{{ cb[0] }}</td>
         <td>{{ cb[1] or "—" }}</td>
         <td>{{ cb[2] or "—" }}</td>
-        <td>{{ cb[3] }}</td>
-        <td class="{{ cb[4] }}">{{ cb[4].capitalize() }}</td>
+        <td>{{ cb[3] or "—" }}</td>
+        <td>{{ cb[4] or "—" }}</td>
+        <td>{{ cb[5] }}</td>
+        <td class="{{ cb[6] }}">{{ cb[6].capitalize() }}</td>
         <td>
             <form method="POST" action="/admin/callbacks/update/{{ cb[0] }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <select name="status">
-                    <option value="pending" {% if cb[4]=='pending' %}selected{% endif %}>Pending</option>
-                    <option value="called" {% if cb[4]=='called' %}selected{% endif %}>Called</option>
-                    <option value="closed" {% if cb[4]=='closed' %}selected{% endif %}>Closed</option>
+                    <option value="pending" {% if cb[6]=='pending' %}selected{% endif %}>Pending</option>
+                    <option value="called" {% if cb[6]=='called' %}selected{% endif %}>Called</option>
+                    <option value="closed" {% if cb[6]=='closed' %}selected{% endif %}>Closed</option>
                 </select>
                 <button type="submit">Update</button>
             </form>

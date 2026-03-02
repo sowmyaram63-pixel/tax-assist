@@ -51,6 +51,7 @@
 
     <!-- FORM -->
     <form class="auth-box" method="POST" action="{{ '/login' if mode=='login' else '/signup' }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       <!-- GOOGLE AUTH -->
       <a href="/google-login" class="oauth-btn google">

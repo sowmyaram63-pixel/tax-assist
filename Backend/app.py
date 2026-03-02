@@ -15,6 +15,7 @@ sys.path.insert(0, PROJECT_ROOT)
 from flask import Flask, render_template, request, redirect, session, url_for, jsonify, abort
 from authlib.integrations.flask_client import OAuth
 from werkzeug.security import generate_password_hash, check_password_hash
+from jinja2 import TemplateNotFound
 from dotenv import load_dotenv
 load_dotenv()
 import json
@@ -22,7 +23,10 @@ import psycopg2
 from Backend.db import get_db_connection, release_db_connection
 
 def get_db():
-    conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+    db_url = os.getenv("DATABASE_URL") or os.getenv("LOCAL_DATABASE_URL")
+    if not db_url:
+        raise RuntimeError("DATABASE_URL not set")
+    conn = psycopg2.connect(db_url)
     return conn, conn.cursor()
 
 
@@ -165,21 +169,13 @@ def ensure_callback_schema_safe():
         _callback_schema_failed_once = True
 
 
-def pick_existing_path(paths):
-    for p in paths:
-        if os.path.isdir(p):
-            return p
-    return paths[0]
+TEMPLATE_DIR = os.path.join(PROJECT_ROOT, "Frontend", "templates")
+STATIC_DIR = os.path.join(PROJECT_ROOT, "Frontend", "static")
 
-TEMPLATE_DIR = pick_existing_path([
-    os.path.join(PROJECT_ROOT, "templates"),
-    os.path.join(PROJECT_ROOT, "Frontend", "templates"),
-])
-
-STATIC_DIR = pick_existing_path([
-    os.path.join(PROJECT_ROOT, "static"),
-    os.path.join(PROJECT_ROOT, "Frontend", "static"),
-])
+if not os.path.isdir(TEMPLATE_DIR):
+    raise RuntimeError(f"Template directory not found: {TEMPLATE_DIR}")
+if not os.path.isdir(STATIC_DIR):
+    raise RuntimeError(f"Static directory not found: {STATIC_DIR}")
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 
@@ -192,9 +188,17 @@ app.register_blueprint(admin_bp)
 from Backend.otp import otp_bp
 app.register_blueprint(otp_bp)
 
-app.secret_key = os.getenv("FLASK_SECRET_KEY")
+app.secret_key = (
+    os.getenv("FLASK_SECRET_KEY")
+    or os.getenv("SECRET_KEY")
+    or os.getenv("FLASK_SECRET")
+)
 if not app.secret_key:
-    raise RuntimeError("SECRET_KEY not set in environment")
+    # Keep local dev bootable even when env files are incomplete.
+    app.secret_key = "dev-insecure-secret-key-change-me"
+    logging.warning(
+        "No FLASK_SECRET_KEY/SECRET_KEY found; using insecure development fallback secret."
+    )
 
 app.config.update(
     SESSION_PERMANENT=False,                 # Browser-session cookie only
@@ -325,6 +329,15 @@ def admin_business_next_redirect(op_status=None):
 
     sanitized = urlunsplit(("", "", path, urlencode(query_items, doseq=True), ""))
     return redirect(sanitized)
+
+
+def render_with_fallback(template_name, fallback_template="home.html"):
+    try:
+        return render_template(template_name)
+    except TemplateNotFound:
+        if fallback_template and fallback_template != template_name:
+            return render_template(fallback_template)
+        abort(404)
 
 def get_bot_reply(message, lang="en"):
     raw = (message or "").strip()
@@ -859,9 +872,6 @@ def login():
 
     return render_template("auth.html", mode="login")
 
-
-    return render_template("auth.html", mode="login")
-
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "POST":
@@ -898,7 +908,7 @@ def logout():
 
 @app.route("/belated-itr")
 def belated_itr():
-    return render_template("belated_itrfiling.html")
+    return render_template("belated_ITRfiling.html")
 
 @app.route("/tax-planning")
 def tax_planning_services():
@@ -906,34 +916,34 @@ def tax_planning_services():
 
 @app.route("/chatbot")
 def chatbot():
-    return render_template("chatbot.html")
+    return redirect("/")
 
 
 @app.route("/consultation")
 def consultation():
-    return render_template("consultation.html")
+    return render_with_fallback("consultation.html")
 
 
 @app.route("/document-checklist")
 @app.route("/document_checklist")
 @app.route("/checklist")
 def document_checklist():
-    return render_template("document_checklist.html")
+    return render_with_fallback("document_checklist.html")
 
 
 @app.route("/privacy-policy")
 def privacy_policy():
-    return render_template("privacy_policy.html")
+    return render_with_fallback("privacy_policy.html")
 
 
 @app.route("/terms-and-conditions")
 def terms_and_conditions():
-    return render_template("terms_and_conditions.html")
+    return render_with_fallback("terms_and_conditions.html")
 
 
 @app.route("/data-confidentiality")
 def data_confidentiality():
-    return render_template("data_confidentiality.html")
+    return render_with_fallback("data_confidentiality.html")
 
 
 def redirect_to_offline_support():
@@ -981,7 +991,6 @@ def request_callback():
     except psycopg2.OperationalError:
         return status_redirect("/consultation", "db_error")
 
-    cursor = None
     cursor = None
     try:
         cursor = conn.cursor()
@@ -1128,7 +1137,7 @@ def inject_whatsapp():
 
 @app.errorhandler(403)
 def forbidden(_error):
-    return render_template("403.html"), 403
+    return render_with_fallback("403.html"), 403
 
 
 #admin dashboard
@@ -1152,6 +1161,7 @@ def admin_dashboard():
             db_error=True
         )
 
+    cursor = None
     try:
         cursor = conn.cursor()
         # Single round-trip query for dashboard counters.

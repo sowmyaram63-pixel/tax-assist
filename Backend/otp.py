@@ -22,11 +22,11 @@ def send_sms_otp(phone, otp):
     }
 
     headers = {
-        "authorization": os.getenv("FAST2SMS_API_KEY"),
+        "authorization": os.getenv("FAST2SMS_API_KEY") or os.getenv("FAST2SMS_API_kEY"),
         "Content-Type": "application/json"
     }
 
-    response = requests.post(url, data=payload, headers=headers)
+    response = requests.post(url, json=payload, headers=headers, timeout=10)
     print("FAST2SMS RESPONSE:", response.text)
 
 

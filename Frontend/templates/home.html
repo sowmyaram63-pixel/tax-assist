@@ -1,101 +1,116 @@
-
 <!DOCTYPE html>
-<html lang = "en">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>TaxAssist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SV Accountax Crew</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <nav class="navbar">
-  <div class="logo">TaxAssist</div>
-
+  <div class="logo">SV Accountax Crew</div>
   <div class="nav-links">
-    {% if session.get("role") == "admin" %}
-    {#
-    <a href="/admin/callbacks">Admin</a>
-    <a href="/admin/business" style="margin-left:15px;">Registrations</a>
-    #}
-    {% endif %}
-
-
-
-    <a href="/login" class="get-started">Get Started</a>
+    <a href="/login" class="get-started">Get Started / Login</a>
   </div>
 </nav>
 
-<section class="hero">
-  
-  <div class="hero-content">
-    <div class="badge">
-      ₹1766.69 Cr Refund processed this year
-    </div>
-    <h1>Hire a Tax Expert</h1>
-    <p class="hero-subtext">
-      File your taxes confidently with expert assistance,
-      accurate filing, and maximum savings.
+<main class="page-wrap">
+  <section class="hero">
+    <span class="pill">Trusted Tax &amp; Compliance Partner</span>
+    <h1>Professional Tax Support for Individuals and Businesses</h1>
+    <p>
+      SV Accountax Crew helps you file returns, manage GST and registrations, and
+      stay compliant with expert guidance and confidential handling.
     </p>
-    <div class="cards">
 
-     <div class="card yellow">
-       <div class="card-content">
-         <div class="card-badge purple">Revised Filing by Experts</div>
-         <div class="icon">
-            <img src="{{ url_for('static', filename='icons/document.png') }}">
-         </div>
-         <h3>Belated ITR filing</h3>
-         <p>ITR-U</p>
-       </div>
+    <div class="hero-actions">
+      <a href="/consultation" class="btn btn-blue">Book Consultation</a>
+      <a href="https://wa.me/919676359019?text=Hi%20I%20need%20tax%20assistance" target="_blank" class="btn btn-green">WhatsApp</a>
+    </div>
+  </section>
 
-       <a href="/belated-itr" class="btn-link">
-          <button>Hire Now</button>
-       </a>
-     </div>
-     <div class="card peach">
-       <div class="card-content">
-         <div class="card-badge blue">Max Tax Savings Guaranteed</div>
-         <div class="icon">
-           <img src="{{ url_for('static', filename='icons/register.png') }}">
-         </div>
-         <h3>Tax Planning Services</h3>
-         <p>&nbsp;</p> 
-       </div>
+  <section class="section-block">
+    <h2 class="section-title">Featured Services</h2>
+    <div class="feature-grid">
+      <article class="feature-card tone-1">
+        <div class="icon-wrap"><img src="{{ url_for('static', filename='icons/document.png') }}" alt="ITR"></div>
+        <h3>Belated ITR filing</h3>
+        <p>ITR-U</p>
+        <a href="/belated-itr" class="card-btn">Hire Now</a>
+      </article>
 
-       <a href="/tax-planning" class="btn-link">
-          <button>Book Now</button>
-       </a>
-     </div>
-     <div class="card orange">
-       <div class="card-content">
-         <div class="card-badge green">Easy & Fast Registration</div>
-         <div class="icon">
-            <img src="{{ url_for('static', filename='icons/bussiness.png') }}">
-         </div>
-         <h3>Register Your Business</h3>
-         <p>&nbsp;</p>
-       </div>
-        <a href="/register-business" class="btn-link">
-          <button>Register</button>
-        </a>
-     </div>
-     <div class="card cyan">
-       <div class="card-content">
-         <div class="card-badge green">Live Breakdown by Experts</div>
-         <div class="icon"> 
-            <img src="{{ url_for('static', filename='icons/government.png') }}">
-         </div>
-         <h3>Budget 2026 Updates</h3>
-         <p>&nbsp;</p>
-       </div>
-       <a href="/budget-2026" class="union-budget-widget">
-          <button>Watch Now</button>
-       </a>
-          
-     </div>
+      <article class="feature-card tone-2">
+        <div class="icon-wrap"><img src="{{ url_for('static', filename='icons/tax expert icon.png') }}" alt="Tax Planning"></div>
+        <h3>Tax Planning Services</h3>
+        <p>Max savings strategy support</p>
+        <a href="/tax-planning" class="card-btn">Book Now</a>
+      </article>
 
-  </div>
-</section>
+      <article class="feature-card tone-3">
+        <div class="icon-wrap"><img src="{{ url_for('static', filename='icons/bussiness.png') }}" alt="Business"></div>
+        <h3>Register Your Business</h3>
+        <p>MSME, LLP, Pvt Ltd and more</p>
+        <a href="/register-business" class="card-btn">Register</a>
+      </article>
+
+      <article class="feature-card tone-4">
+        <div class="icon-wrap"><img src="{{ url_for('static', filename='icons/government.png') }}" alt="Updates"></div>
+        <h3>Document Checklist Center <span class="dot">•</span></h3>
+        <p>File-ready documentation guidance</p>
+        <a href="/document-checklist" class="card-btn">Open</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <h2 class="section-title">More Services</h2>
+    <div class="services-grid">
+      <a href="/belated-itr" class="service-box tone-a">
+        <strong>ITR Filing</strong>
+        <span>Belated and revised filing support</span>
+        <em>Know more</em>
+      </a>
+      <a href="/tax-planning" class="service-box tone-b">
+        <strong>GST Services</strong>
+        <span>Registration and returns guidance</span>
+        <em>Know more</em>
+      </a>
+      <a href="/tax-planning" class="service-box tone-c">
+        <strong>TDS Returns</strong>
+        <span>24Q, 26Q, 27Q compliance help</span>
+        <em>Know more</em>
+      </a>
+      <a href="/register-business" class="service-box tone-d">
+        <strong>Business Registration</strong>
+        <span>MSME, LLP, Pvt Ltd and more</span>
+        <em>Know more</em>
+      </a>
+      <a href="/tax-planning" class="service-box tone-e">
+        <strong>ROC Compliances</strong>
+        <span>Ongoing company compliance support</span>
+        <em>Know more</em>
+      </a>
+      <a href="/tax-planning" class="service-box tone-f">
+        <strong>Accounting</strong>
+        <span>Bookkeeping and advisory support</span>
+        <em>Know more</em>
+      </a>
+    </div>
+  </section>
+
+  <section class="checklist section-block">
+    <h2>Document Checklist Center</h2>
+    <p>Before filing ITR, GST, or registration forms, quickly verify the required documents and avoid delays.</p>
+    <a href="/document-checklist" class="btn btn-blue">Check Required Documents</a>
+  </section>
+
+  <section class="trust-strip">
+    <div>Client data kept confidential</div>
+    <div>Experienced tax and compliance support</div>
+    <div>Working Hours: Monday to Saturday, 10:00 AM to 7:00 PM</div>
+  </section>
+</main>
 
 <div id="chatbot-container" class="chatbot hidden">
   <div class="chat-header">
@@ -104,46 +119,34 @@
   </div>
 
   <div id="chat-messages" class="chat-body">
-
     <div id="suggestions" class="quick-replies"></div>
   </div>
 
   <div class="chat-input">
-    <input id="chat-input" placeholder="Type a message…"
-           onkeypress="if(event.key==='Enter') sendMessage()">
+    <input id="chat-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMessage()">
     <button onclick="sendMessage()">Send</button>
   </div>
 </div>
+
 <div class="floating-actions">
-
-  <!-- Chatbot Button -->
-  <button class="chat-bubble" onclick="toggleChat(); startChat();">
-
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-      <path d="M4 4h16v11H7l-3 3V4z"
-            stroke="white"
-            stroke-width="2"/>
+  <button class="chat-bubble" onclick="toggleChat(); startChat();" aria-label="Open chat">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 4h16v11H7l-3 3V4z" stroke="white" stroke-width="2"/>
     </svg>
   </button>
- <a
-  href="https://wa.me/919676359019?text=Hi%20I%20need%20tax%20assistance"
-  class="whatsapp-float"
-  target="_blank"
-  aria-label="Chat with us on WhatsApp"
- >
-  <span class="wa-tooltip">Chat with us</span>
-  <img
-    src="{{ url_for('static', filename='icons/whatsapp.svg') }}"
-    alt="WhatsApp"
-  />
- </a>
 
-
-
+  <a
+    href="https://wa.me/919676359019?text=Hi%20I%20need%20tax%20assistance"
+    class="whatsapp-float"
+    target="_blank"
+    aria-label="Chat with us on WhatsApp"
+  >
+    <span class="wa-tooltip">Chat with us</span>
+    <img src="{{ url_for('static', filename='icons/whatsapp.svg') }}" alt="WhatsApp"/>
+  </a>
 </div>
 
 <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
-
 
 </body>
 </html>

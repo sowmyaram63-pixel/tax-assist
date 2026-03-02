@@ -38,6 +38,7 @@
         <td class="status {{ b[8]|lower }}">{{ b[8] }}</td>
         <td>
             <form method="POST" action="/admin/update-status">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="id" value="{{ b[0] }}">
                 <select name="status">
                     <option value="NEW">NEW</option>
