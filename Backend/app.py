@@ -14,7 +14,9 @@ sys.path.insert(0, PROJECT_ROOT)
 
 from flask import Flask, render_template, request, redirect, session, url_for, jsonify, abort
 from authlib.integrations.flask_client import OAuth
+from authlib.integrations.base_client.errors import MismatchingStateError
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.middleware.proxy_fix import ProxyFix
 from jinja2 import TemplateNotFound
 from dotenv import load_dotenv
 load_dotenv()
@@ -178,6 +180,7 @@ if not os.path.isdir(STATIC_DIR):
     raise RuntimeError(f"Static directory not found: {STATIC_DIR}")
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
 from Backend.admin import admin_bp
 
@@ -203,7 +206,9 @@ if not app.secret_key:
 app.config.update(
     SESSION_PERMANENT=False,                 # Browser-session cookie only
     PERMANENT_SESSION_LIFETIME=timedelta(minutes=20),  # Fallback timeout
-    SESSION_REFRESH_EACH_REQUEST=True
+    SESSION_REFRESH_EACH_REQUEST=True,
+    SESSION_COOKIE_NAME=os.getenv("SESSION_COOKIE_NAME", "taxassist_mod_session"),
+    SESSION_COOKIE_SAMESITE="Lax",
 )
 app.config["SESSION_IDLE_TIMEOUT_SECONDS"] = int(os.getenv("SESSION_IDLE_TIMEOUT_SECONDS", "300"))
 app.config["SESSION_BOOT_ID"] = str(time.time_ns())
@@ -719,12 +724,39 @@ def chat():
 
 @app.route("/google-login")
 def google_login():
-    redirect_uri = url_for("google_callback", _external=True)
-    return google.authorize_redirect(redirect_uri)
+    # Remove stale OAuth state keys to avoid collisions across retries.
+    for key in list(session.keys()):
+        k = str(key).lower()
+        if "google" in k and "state" in k:
+            session.pop(key, None)
+
+    redirect_uri = (os.getenv("GOOGLE_REDIRECT_URI") or "").strip()
+    if not redirect_uri:
+        base_url = (
+            os.getenv("APP_BASE_URL")
+            or os.getenv("PUBLIC_BASE_URL")
+            or ""
+        ).strip().rstrip("/")
+        if base_url:
+            redirect_uri = f"{base_url}/google/callback"
+        else:
+            redirect_uri = url_for("google_callback", _external=True)
+    app.logger.info("Google OAuth redirect_uri=%s", redirect_uri)
+    response = google.authorize_redirect(redirect_uri)
+    session.modified = True
+    return response
 
 @app.route("/google/callback")
+@app.route("/google-callback")
+@app.route("/auth/google/callback")
 def google_callback():
-    token = google.authorize_access_token(leeway=10)
+    try:
+        token = google.authorize_access_token(leeway=10)
+    except MismatchingStateError:
+        # Session cookie/state got out of sync (host mismatch, stale cookie, retries).
+        session.clear()
+        return redirect("/login?status=google_state_mismatch")
+
     user = google.get(
         "https://www.googleapis.com/oauth2/v2/userinfo"
     ).json()
