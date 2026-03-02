@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 load_dotenv()
 import json
 import psycopg2
-from db import get_db_connection, release_db_connection
+from Backend.db import get_db_connection, release_db_connection
 
 def get_db():
     conn = psycopg2.connect(os.getenv("DATABASE_URL"))
@@ -164,11 +164,26 @@ def ensure_callback_schema_safe():
         logging.exception("callback schema init skipped due to DB error: %s", exc)
         _callback_schema_failed_once = True
 
-app = Flask(__name__,
-    template_folder="../frontend/templates",
-    static_folder="../frontend/static")
 
-from admin import admin_bp
+def pick_existing_path(paths):
+    for p in paths:
+        if os.path.isdir(p):
+            return p
+    return paths[0]
+
+TEMPLATE_DIR = pick_existing_path([
+    os.path.join(PROJECT_ROOT, "templates"),
+    os.path.join(PROJECT_ROOT, "Frontend", "templates"),
+])
+
+STATIC_DIR = pick_existing_path([
+    os.path.join(PROJECT_ROOT, "static"),
+    os.path.join(PROJECT_ROOT, "Frontend", "static"),
+])
+
+app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
+
+from Backend.admin import admin_bp
 
 app.register_blueprint(admin_bp)
 
@@ -274,6 +289,10 @@ def get_csrf_token():
     if "_csrf_token" not in session:
         session["_csrf_token"] = secrets.token_hex(32)
     return session["_csrf_token"]
+
+@app.get("/healthz")
+def healthz():
+    return "ok", 200
 
 
 def validate_csrf():
